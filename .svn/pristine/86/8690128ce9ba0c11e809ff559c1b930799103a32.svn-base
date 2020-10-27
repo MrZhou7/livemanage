@@ -1,0 +1,56 @@
+<?php
+
+namespace app\service\controller;
+
+use app\model\CleanDetail;
+use think\App;
+
+class CleanDetailService extends BaseService
+{
+    private $CleanDetailModel;
+
+    public function __construct(App $app = null)
+    {
+        $this->CleanDetailModel = new CleanDetail();
+    }
+
+    /**
+     * Notes: 新增保洁评定详情数据
+     * User: myrxl
+     * @param $data
+     * @return bool
+     * Date: 2020/10/12
+     * Time: 9:54
+     */
+    public function add($data)
+    {
+        return $this->CleanDetailModel->add($data);
+    }
+
+    /**
+     * Notes: 获取列表
+     * User: myrxl
+     * @param $data
+     * @return bool
+     * Date: 2020/10/12
+     * Time: 17:17
+     */
+    public function getList($map)
+    {
+        return $this->CleanDetailModel->getList("*", $map,"first_id asc");
+    }
+
+    /**
+     * Notes:修改Enabled
+     * User: myrxl
+     * @param $enabled
+     * @param $assessment_id
+     * @return bool
+     * Date: 2020/10/13
+     * Time: 14:51
+     */
+    public function editEnabled($enabled, $assessment_id)
+    {
+        return $this->CleanDetailModel->editEnabled($enabled, $assessment_id, 'edit');
+    }
+}

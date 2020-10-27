@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>保洁卫生情况月度统计表</title>
+    <meta name="Description" content="现场管理" />
+    <meta name="renderer" content="保洁卫生情况月度统计表">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" href="__STATIC__/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+    <link rel="stylesheet" href="__STATIC__/layui/css/formSelects-v4.css">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]> -->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <style type="text/css">
+        body {
+            overflow-y: scroll;
+        }
+        .layui-row {
+            padding: 10px 0;
+        }
+
+        .well {
+            min-height: 20px;
+            margin: 20px 0;
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            border: 1px solid transparent;
+            border-radius: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <form class="layui-form search-box layui-form-sm well" action="">
+            <div class="layui-row">
+                <div class="layui-col-sm4">
+                    <label class="layui-form-label">选择商场</label>
+                    <div class="layui-input-block">
+                        <select name="area" lay-filter="area" id="area"></select>
+                    </div>
+                </div>
+                <div class="layui-col-sm4">
+                    <label class="layui-form-label">选择门店</label>
+                    <div class="layui-input-block">
+                        <select name="mall" xm-select-search='' xm-select="select1" lay-filter="mall" id="mall"
+                            xm-select-height="38px">
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-col-sm4">
+                    <label class="layui-form-label">选择日期</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" id="date" placeholder="日期">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label"></label>
+                <div class="layui-inline">
+                    <button class="layui-btn" id="btn">查 询</button>
+                </div>
+            </div>
+        </form>
+
+        <table class="layui-hide" id="tableData"></table>
+    </div>
+
+    <script type="text/javascript" src="__STATIC__/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="__STATIC__/layui/formSelects-v4.js" charset="utf-8"></script>
+
+
+    <!-- 实例化编辑器 -->
+    <script type="text/javascript">
+        layui.use(['form', 'laytpl', 'table', 'laydate'], function () {
+            var layer = layui.layer
+                , $ = layui.jquery
+                , form = layui.form
+                , table = layui.table
+                , laytpl = layui.laytpl
+                , laydate = layui.laydate
+                , formSelects = layui.formSelects;
+
+            laydate.render({
+                elem: '#date'
+                , format: 'yyyy-MM'
+                , type: 'month'
+                , max: 0
+                , value: new Date()
+            });
+
+
+            $.ajax({
+                type: "post",
+                url: "{:url('web/stat/getQuyu')}",
+                dataType: "json",
+                contentType: "application/json",
+                async: false
+            })
+                .then(function (res) {
+                    if (res.code == 0) {
+                        var areaInfo = '';
+                        for (var i in res.data) {
+                            areaInfo += "<option value='" + res.data[i].id + "'>" + res.data[i].subcompanyname + "</option>"
+                        }
+                        $('#area').html(areaInfo);
+                        let value = $("select[name='area']").val();
+                        geiMall(value)
+                        form.render();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                })
+                .fail(function (err) {
+                    layer.msg(err.msg);
+                });
+
+            form.on('select(area)', function (data) {
+                if ($("select[name='area']").val() != '') {
+                    geiMall(data.value)
+                }
+            });
+
+            var tableIns = table.render({
+                elem: '#tableData'
+                , method: "post"
+                , url: "{:url('web/Evaluation/monthReport')}"
+                , limit: 9999
+                , where: {
+                    area_id: $("select[name='area']").val(),
+                    mall_id: formSelects.value('select1', 'valStr'),
+                    date: $('#date').val()
+                }
+                , toolbar: true
+                , cols: [[
+                    { field: 'index', width: 80, title: '序号', fixed: 'left', templet: '#index' }
+                    , { field: 'mall', title: '门店', minWidth: 100 }
+                    , { field: 'count', title: '月均扣分', minWidth: 100 }
+                    , { field: '1num', title: '商场出入口', minWidth: 100 }
+                    , { field: '2num', title: '公共区域天地墙', minWidth: 100 }
+                    , { field: '3num', title: '设备设施', minWidth: 100 }
+                    , { field: '4num', title: '消防通道', minWidth: 100 }
+                    , { field: '5num', title: '电梯', minWidth: 100 }
+                    , { field: '6num', title: '卫生间', minWidth: 100 }
+                ]]
+            });
+
+
+            $(document).on('click', '#btn', function () {
+                var time = $('#date').val();
+                console.log(!!formSelects.value('select1', 'valStr'))
+                if (!formSelects.value('select1', 'valStr')) {
+                    layer.msg("请选择门店");
+                    return false;
+                }
+                tableIns.reload({
+                    where: { //设定异步数据接口的额外参数，任意设
+                        area_id: $("select[name='area']").val(),
+                        mall_id: formSelects.value('select1', 'valStr'),
+                        date: time
+                    }
+                });
+                return false;
+            })
+
+            function geiMall(data) {
+                $.ajax({
+                    type: "post",
+                    url: "{:url('web/stat/getMall')}",
+                    dataType: "json",
+                    contentType: "application/json",
+                    async: false,
+                    data: JSON.stringify({ area_id: data })
+                })
+                    .then(function (res) {
+                        if (res.code == 0) {
+                            let list = [];
+                            for (let index = 0; index < res.data.length; index++) {
+                                list.push({
+                                    name: res.data[index].subcompanyname,
+                                    value: res.data[index].id
+                                });
+
+                            }
+                            formSelects.data('select1', 'local', { arr: list });
+                            form.render();
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    })
+                    .fail(function (err) {
+                        layer.msg(err.msg);
+                    });
+            }
+        });
+    </script>
+    <script type="text/html" id="index">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+</body>
+
+</html>

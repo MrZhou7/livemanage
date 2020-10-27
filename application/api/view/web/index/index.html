@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>现场管理</title>
+    <meta name="renderer" content="首页">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="shortcut icon" href="__STATIC__/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        a{text-decoration:none;}
+        .layui-nav {
+            border-radius: 0px;
+        }
+        .page-content {
+            position: absolute;
+            top: 0px;
+            right: 0;
+            bottom:0px;
+            left: 0px;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .page-content iframe {
+            width: 100%;
+            height: 100%;
+        }
+        a {
+            cursor:pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">现场管理 1.0</div>
+        <ul class="layui-nav layui-layout-right">
+            <!--<li class="layui-nav-item">-->
+            <!--<a href="javascript:;">-->
+            <!--<img src="http://t.cn/RCzsdCq" class="layui-nav-img">-->
+            <!--贤心-->
+            <!--</a>-->
+            <!--<dl class="layui-nav-child">-->
+            <!--<dd><a href="">基本资料</a></dd>-->
+            <!--<dd><a href="">安全设置</a></dd>-->
+            <!--</dl>-->
+            <!--</li>-->
+            <!--<li class="layui-nav-item"><a href="">退出</a></li>-->
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">文章管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a data-src="{:url('web/article/index')}">添加文章</a></dd>
+                        <dd><a data-src="{:url('web/article/lists')}">文章列表</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">分类管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a  data-src="{:url('web/column/index')}">添加分类</a></dd>
+                        <dd><a  data-src="{:url('web/column/lists')}">分类列表</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">工作统计</a>
+                    <dl class="layui-nav-child">
+                        <dd><a  data-src="{:url('web/stat/produce')}">提报数量</a></dd>
+                        <dd><a  data-src="{:url('web/stat/solve')}">解决数量</a></dd>
+                        <dd><a  data-src="{:url('web/stat/avg')}">平均耗时</a></dd>
+                        <dd><a  data-src="{:url('web/stat/important')}">重要事件</a></dd>
+                        <dd><a  data-src="{:url('web/stat/lightspot')}">服务亮点</a></dd>
+                        <dd><a  data-src="{:url('web/stat/advice')}">意见建议</a></dd>
+                        <dd><a  data-src="{:url('web/stat/scene')}">人员统计</a></dd>
+                        <dd><a  data-src="{:url('web/stat/market')}">市调对标</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">保洁评定</a>
+                    <dl class="layui-nav-child">
+                        <dd><a  data-src="{:url('web/evaluation/day')}">保洁卫生标准每日打分表</a></dd>
+                        <dd><a  data-src="{:url('web/evaluation/month')}">保洁卫生情况月度统计表</a></dd>
+                        <dd><a  data-src="{:url('web/evaluation/monthCleanAssessment')}">月度保洁质量评定表</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div class="page-content">
+            <iframe src="{:url('web/article/lists')}" frameborder="0" scrolling="yes" class="weIframe"></iframe>
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © 2019 By XXZX
+    </div>
+</div>
+<script src="__STATIC__/layui/layui.js"></script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element
+       ,layer = layui.layer
+       ,$ = layui.jquery;
+        $(function(){
+            //获取src值
+            $(".layui-nav-item a").on("click",function(){
+                var address =$(this).attr("data-src");
+                $("iframe").attr("src",address);
+            });
+            //一下代码是根据窗口高度在设置iframe的高度
+            // var frame = $(".weIframe");
+
+            // var frameheight = $(window).height();
+            // // console.log(frameheight);
+            // frame.css("height",frameheight);
+        });
+    });
+</script>
+</div>
+
+</html>

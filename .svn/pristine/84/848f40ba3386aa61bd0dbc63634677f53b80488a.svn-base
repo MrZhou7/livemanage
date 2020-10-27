@@ -1,0 +1,248 @@
+<?php
+namespace app\api\controller\web;
+
+use app\service\controller\AdviceService;
+use app\service\controller\AskHelpService;
+use app\service\controller\CenterService;
+use app\service\controller\MarketService;
+use app\service\controller\MatterRecordService;
+use think\App;
+use Mpdf\Mpdf;
+class Stat extends BaseController
+{
+    public function __construct(App $app = null)
+    {
+        parent::__construct($app);
+        $this->AdviceService       = new AdviceService();
+        $this->CenterService       = new CenterService();
+        $this->AskHelpService      = new AskHelpService();
+        $this->MatterRecordService = new MatterRecordService();
+        $this->MarketService       = new MarketService();
+    }
+
+
+    /**
+     * Notes: 获取区域
+     * User: myrxl
+     * Date: 2019/9/2
+     * Time: 14:07
+     */
+    public function getQuyu(){
+        $data = $this->CenterService->getQuyu();
+        self::showReturnCode($data,0);
+    }
+
+    /**
+     * Notes:根据区域获取门店
+     * User: myrxl
+     * Date: 2019/9/2
+     * Time: 14:33
+     */
+    public function getMall(){
+        $area_id = input('area_id','');
+        if(!$area_id) self::showReturnCode('',1001,'参数有误');
+        $data = $this->CenterService->getMall($area_id);
+        self::showReturnCode($data,0);
+    }
+
+
+    public function produce(){
+        return view();
+    }
+    /**
+     * Notes:产生问题数量
+     * User: myrxl
+     * Date: 2019/8/29
+     * Time: 14:59
+     */
+    public function produceProblem(){
+        //获取问题  周/月/季度
+        $data = $this->AskHelpService->produceProblem(input());
+        self::showReturnCode($data,0);
+    }
+
+    public function solve(){
+        return view();
+    }
+    /**
+     * Notes: 解决问题
+     * User: myrxl
+     * Date: 2019/9/2
+     * Time: 11:14
+     */
+    public function solveProblem(){
+        //解决问题  周/月/季度
+        $data = $this->AskHelpService->solveProblem(input());
+        self::showReturnCode($data,0);
+    }
+
+    public function avg(){
+        return view();
+    }
+    /**
+     * Notes:平均耗时
+     * User: myrxl
+     * Date: 2019/9/2
+     * Time: 15:05
+     */
+    public function avgtime(){
+        $data = $this->AskHelpService->avgtime(input());
+        self::showReturnCode($data,0);
+    }
+
+
+
+    public function important(){
+        return view();
+    }
+
+    /**
+     * Notes: 获取重要事件列表
+     * User: myrxl
+     * Date: 2019/9/2
+     * Time: 15:29
+     */
+    public function importantList(){
+        $page = getPage(input());
+        $list = $this->MatterRecordService->importantList(input(),$page);
+        return json(['count'=>$list->total(),'code'=>0,'data'=>$list->items()]);
+        //self::showReturnCode(['count'=>$list->total(),'data'=>$list->items()],'0');
+    }
+
+
+    public function lightspot(){
+        return view();
+    }
+
+    /**
+     * Notes:服务亮点列表
+     * User: myrxl
+     * Date: 2019/9/2
+     * Time: 15:58
+     */
+    public function lightspotList(){
+        $page = getPage(input());
+        $list = $this->MatterRecordService->importantList(input(),$page,'lightspot');
+        //self::showReturnCode(['count'=>$list->total(),'data'=>$list->items()],'0');
+        return json(['count'=>$list->total(),'code'=>0,'data'=>$list->items()]);
+    }
+
+
+    public function advice(){
+        return view();
+    }
+    /**
+     * Notes:意见及建议汇总
+     * User: myrxl
+     * Date: 2019/8/27
+     * Time: 19:02
+     */
+    public function adviceList(){
+        $page = getPage(input('post.'));
+        $list = $this->AdviceService->getPageLists('',$page);
+        return json(['count'=>$list->total(),'code'=>0,'data'=>$list->items()]);
+    }
+
+
+    public function scene(){
+        return view();
+    }
+    /**
+     * Notes:我在现场列表 事项记录 寻求帮助
+     * User: myrxl
+     * Date: 2019/9/3
+     * Time: 8:56
+     */
+    public function sceneList(){
+        $data = input('post.');
+        $page = getPage($data);
+        if(!isset($data['end'])) $data['end'] = date('Y-m-d 00:00:00',time());
+        if(!isset($data['start'])) $data['start'] = date('Y-m-d 00:00:00',time()-7*86400);
+        $list = $this->CenterService->sceneList($data,$page);
+        return json(['count'=>$list['count'],'code'=>0,'data'=>$list['data']]);
+    }
+
+
+    public function market(){
+        return view();
+    }
+
+    /**
+     * Notes:市调对标列表
+     * User: myrxl
+     * Date: 2019/10/14
+     * Time: 9:00
+     */
+    public function marketList()
+    {
+        $data = input('post.');
+        $page = getPage($data);
+        if (!isset($data['end'])) $data['end'] = date('Y-m-d 00:00:00', time());
+        if (!isset($data['start'])) $data['start'] = date('Y-m-d 00:00:00', time() - 7 * 86400);
+        $list = $this->MarketService->marketList(input(), $page);
+        return json(['count' => $list->total(), 'code' => 0, 'data' => $list->items()]);
+    }
+
+
+
+
+
+    public function test(){
+        $arr  = [
+            'mode'=>'zh-CN',
+            //'mode'=>'UTF-8',
+//            'format'=>'A4',
+//            'default_font_size'=>'',
+//            'default_font'=>'',
+//            'mgl'=>0,
+//            'mgr'=>0,
+//            'mgt'=>0,
+//            'mgb'=>0,
+//            'mgh'=>0,
+//            'mgf'=>0,
+//            'orientation'=>0
+        ];
+        $mpdf = new Mpdf($arr);
+        $md = "<h1 style=\"font-size: 32px; font-weight: bold; border-bottom: 2px solid rgb(204, 204, 204); padding: 0px 4px 0px 0px; text-align: center; margin: 0px 0px 20px;\">
+    商管小程序<br/>
+</h1>
+<p style=\"text-indent: 2em;\">
+    阿萨德萨达萨达阿萨德 阿萨德啊阿松萨达<br/>
+</p>
+<p style=\"text-indent: 2em;\">
+    &nbsp;&nbsp;&nbsp;&nbsp;1，驱蚊器翁群无
+</p>
+<p style=\"text-indent: 2em;\">
+    &nbsp;&nbsp;&nbsp;&nbsp;2，啊实打实大师
+</p>
+<p style=\"text-align:center\">
+    <img src=\"http://pic1.win4000.com/wallpaper/c/53cdd1f7c1f21.jpg\" width=\"100\" height=\"80\"/>
+</p>
+<p>
+    <br/>
+</p>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;阿萨德纳斯达克假数据库的案件萨克家世界加上肯德基阿松<br/>
+</p>
+<p style=\"text-indent: 2em;\">
+    <br/>
+</p>
+<p style=\"text-indent: 2em;\">
+    <br/>
+</p>";
+        $mpdf->WriteHTML($md);
+        $data = $mpdf->Output();
+        die;
+        $data = $mpdf->Output('','s');
+        $path = 'uploads/pdf/'.date('Ymd').'/';
+        $filename = time().'.pdf';
+        if(!is_dir($path)){
+            @mkdir($path, 0777, true);
+        }
+        //$res = file_put_contents($path.$filename,$data);
+
+
+    }
+
+
+}

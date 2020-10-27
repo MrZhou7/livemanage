@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>月度保洁质量评定表</title>
+    <meta name="Description" content="现场管理" />
+    <meta name="renderer" content="月度保洁质量评定表">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" href="__STATIC__/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]> -->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <style type="text/css">
+        body {
+            overflow-y: scroll;
+        }
+
+        .box {
+            margin: 20px 10px;
+        }
+
+        .well {
+            min-height: 20px;
+            padding: 19px;
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            border: 1px solid transparent;
+            border-radius: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn {
+            padding: 9px 15px;
+        }
+
+        .prompt {
+            padding: 10px 50px;
+            color: #CF1322;
+        }
+
+        .newWidth {
+            width: 180px;
+        }
+
+
+        #test-n2 .layui-laydate-main {
+            width: 700px;
+        }
+
+        #test-n2 .layui-laydate-content td,
+        #test-n2 .layui-laydate-content th {
+            width: 100px;
+            height: 60px;
+        }
+
+        .laydate-day-mark {
+            background-color: #5FB878;
+            color: white;
+        }
+
+        span.laydate-day-mark {
+            line-height: 60px;
+        }
+
+        .laydate-day-mark::after {
+            background-color: #5FB878;
+        }
+        .layui-table-cell {
+    font-size:14px;
+    padding:0 5px;
+    height:auto;
+    overflow:visible;
+    text-overflow:inherit;
+    white-space:normal;
+    word-break: break-all;
+}
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div class="layui-form well" action="">
+            <div>
+                <div class="layui-input-inline" id="area"></div>
+                <div class="layui-input-inline" id="mall"></div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">请选择日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="date" placeholder="日期">
+                    </div>
+                </div>
+            </div>
+            <div class="btn">
+                <div class="layui-inline">
+                    <button class="layui-btn" id="btn">查 询</button>
+                    <button class="layui-btn" id="btnPop">修改合同信息</button>
+                </div>
+            </div>
+        </div>
+
+        <table class="layui-hide" id="tableData"></table>
+    </div>
+
+    <script id="formArea" type="text/html">
+    <div class="layui-inline">
+        <label class="layui-form-label">选择区域</label>
+        <div class="layui-input-inline">
+            <select name="area"  lay-filter="area">
+                {{# layui.each(d,function(index,item){ }}
+                <option value="{{item.id}}">{{item.subcompanyname}}</option>
+                {{#});}}
+            </select>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">选择门店</label>
+        <div class="layui-input-inline">
+            <select name="mall" lay-filter="mall"></select>
+        </div>
+    </div>
+</script>
+
+    <script type="text/javascript" src="__STATIC__/layui/layui.js" charset="utf-8"></script>
+
+    <script id="tplDate" type="text/html">
+    <form class="layui-form well">
+        <div class="layui-form-item">
+            <label class="layui-form-label newWidth layui-label-required">本月合同金额</label>
+            <div class="layui-input-inline">
+                <input type="text" name="money" lay-nullText="合同金额不能为空"
+                       placeholder="请输入本月合同金额"
+                       class="layui-input layui-input-md" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label newWidth layui-label-required">应到人数(合同日均至少)</label>
+            <div class="layui-input-inline">
+                <input type="text" name="num" lay-nullText="应到人数不能为空"
+                       placeholder="请输入应到人数"
+                       class="layui-input layui-input-md" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label newWidth layui-label-required">本月无需服务日(带薪)</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="noDate" placeholder="日期">
+            </div>
+        </div>
+    </form>
+    <div class="prompt">
+        如春节期间，当月自然月30天，放假3天，实际服务天数27天，将无需服务的日期选中，即为带薪无需服务日。其余无特殊情况无需选择此项。
+    </div>
+</script>
+
+    <!-- 实例化编辑器 -->
+    <script type="text/javascript">
+        layui.use(['form', 'laytpl', 'table', 'laydate', 'layer'], function () {
+            var layer = layui.layer
+                , $ = layui.jquery
+                , form = layui.form
+                , table = layui.table
+                , laytpl = layui.laytpl
+                , laydate = layui.laydate
+
+            laydate.render({
+                elem: '#date'
+                , format: 'yyyy-MM'
+                , type: 'month'
+                , max: 0
+                , value: new Date()
+            });
+
+            $.ajax({
+                type: "post",
+                url: "{:url('web/stat/getQuyu')}",
+                dataType: "json",
+                contentType: "application/json",
+                async: false
+            })
+                .then(function (res) {
+                    if (res.code == 0) {
+                        var formMenu = document.getElementById("formArea").innerHTML; var view = document.getElementById("area");
+                        laytpl(formMenu).render(res.data, function (html) {
+                            view.innerHTML = html;
+                            let value = $("select[name='area']").val();
+                            getMall(value)
+                            form.render();
+                        });
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                })
+                .fail(function (err) {
+                    layer.msg(err.msg);
+                });
+
+            form.on('select(area)', function (data) {
+                if ($("select[name='area']").val() != '') {
+                    getMall(data.value)
+                }
+            });
+
+            var tableIns = table.render({
+                elem: '#tableData'
+                , method: "post"
+                , url: "{:url('web/Evaluation/monthCleanAssessmentReport')}"
+                , limit: 9999
+                , where: {
+                    area_id: $("select[name='area']").val(),
+                    mall_id: $("select[name='mall']").val(),
+                    date: $('#date').val()
+                }
+                , toolbar: true
+                , cols: [[
+                    { field: 'day', title: '日期', width: 80,align: 'center' }
+                    , { field: 'week', title: '星期', minWidth: 80,align: 'center' }
+                    , { field: 'arrived_morning', title: '实际到岗人数(上午)', minWidth: 160,align: 'center'}
+                    , { field: 'arrived_afternoon', title: '实际到岗人数(下午)', minWidth: 160,align: 'center' }
+                    , { field: 'num_morning', title: '晨巡扣分', minWidth: 80,align: 'center' }
+                    , { field: 'num_afternoon', title: '午巡扣分', minWidth: 80,align: 'center' }
+                    , { field: 'average', title: '当日晨巡午巡平均扣分((晨巡扣分+午巡扣分)/2)', minWidth: 180,align: 'center' }
+                    , { field: 'fee', title: '扣费比例', minWidth: 80,align: 'center' }
+                    , { field: 'day_lock', title: '保洁质量当日扣款(每日服务费*扣费比例)', minWidth: 180,align: 'center' }
+                ]]
+
+            });
+
+            $(document).on('click', '#btn', function () {
+                tableIns.reload({
+                    where: { //设定异步数据接口的额外参数，任意设
+                        area_id: $("select[name='area']").val(),
+                        mall_id: $("select[name='mall']").val(),
+                        date: $('#date').val()
+                    }
+                });
+            })
+            $(document).on('click', '#btnPop', function () {
+                layer.open({
+                    type: 1,
+                    title: '请完善信息，计算表格',
+                    btn: ['保存', '取消'],
+                    area: ['500px', '400px'],
+                    content: $('#tplDate').html(),
+                    resize: false,
+                    scrollbar: false,
+                    shadeClose: false,
+                    shade: [0.3, '#000'],
+                    success: function () {
+                        laydate.render({
+                            elem: '#noDate'
+                            ,format: 'yyyy-MM-dd'
+                            ,trigger: 'click'
+                            , max: 0
+                            ,multiple: ','
+                            // ,value: '2020-10-11, 2020-10-12'
+                            ,circleMark: true
+                            , done: function (value, date, endDate) {
+
+                                console.log(value); //得到日期生成的值，如：2017-08-18
+                            }
+                        });
+                        form.render();
+                        // $.ajax({
+                        //     type: "post",
+                        //     url: "{:url('web/Evaluation/saveContractInfo')}",
+                        //     dataType: "json",
+                        //     contentType: "application/json",
+                        //     async: false,
+                        //     data: JSON.stringify({ date: date, mall_id: mall_id })
+                        // })
+                        //     .then(function (res) {
+                        //         if (res.code == 0) {
+
+                        //             form.render();
+                        //         } else {
+                        //             layer.msg(res.msg);
+                        //         }
+                        //     })
+                        //     .fail(function (err) {
+                        //         layer.msg(err.msg);
+                        //     });
+                    },
+                    yes: function (index) {
+                        // $.ajax({
+                        //     type: "post",
+                        //     url: "{:url('web/Evaluation/saveContractInfo')}",
+                        //     dataType: "json",
+                        //     contentType: "application/json",
+                        //     async: false,
+                        //     data: JSON.stringify({ mall: data.value, mall_id: mall_id, date: date, money: money, num: num, week_day: week_day})
+                        // })
+                        //     .then(function (res) {
+                        //         if (res.code == 0) {
+
+                        //             form.render();
+                        //         } else {
+                        //             layer.msg(res.msg);
+                        //         }
+                        //     })
+                        //     .fail(function (err) {
+                        //         layer.msg(err.msg);
+                        //     });
+                        // return false;
+                    }
+                });
+            })
+            function getMall (data){
+                $.ajax({
+                    type: "post",
+                    url: "{:url('web/stat/getMall')}",
+                    dataType: "json",
+                    contentType: "application/json",
+                    async: false,
+                    data: JSON.stringify({ area_id: data })
+                })
+                    .then(function (res) {
+                        if (res.code == 0) {
+                            var mallInfo = '';
+                            for (var i in res.data) {
+                                mallInfo += "<option value='" + res.data[i].id + "'>" + res.data[i].subcompanyname + "</option>"
+                            }
+                            $("select[name='mall']").html(mallInfo);
+                            form.render();
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    })
+                    .fail(function (err) {
+                        layer.msg(err.msg);
+                    });
+            }
+        });
+    </script>
+    <script type="text/html" id="index">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+</body>
+
+</html>

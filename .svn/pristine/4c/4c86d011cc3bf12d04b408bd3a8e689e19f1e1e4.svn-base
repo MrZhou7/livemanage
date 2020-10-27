@@ -1,0 +1,20 @@
+<?php
+
+namespace app\model;
+
+class CleanDetail extends BaseModel
+{
+
+    public function add($data)
+    {
+        return $this->baseSaveAll($data);
+    }
+
+    public function editEnabled($enabled, $assessment_id)
+    {
+         $this->baseSaveInfo(['enabled' => $enabled], ['assessment_id' => $assessment_id], 'edit');
+         $this->exists(false);
+         return;
+    }
+
+}

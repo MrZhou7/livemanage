@@ -1,0 +1,267 @@
+<?php /*a:1:{s:83:"G:\PhpStudy\PHPTutorial\WWW\livemanage\application\api\view\web\evaluation\day.html";i:1603347258;}*/ ?>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>保洁卫生标准每日打分表</title>
+    <meta name="Description" content="现场管理" />
+    <meta name="renderer" content="保洁卫生标准每日打分表">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" href="/livemanage/public/static/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/livemanage/public/static/layui/css/layui.css">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]> -->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <style type="text/css">
+        body {
+            overflow-y: scroll;
+        }
+
+        .layui-row {
+            padding: 10px 0;
+        }
+
+        .well {
+            min-height: 20px;
+            margin: 20px 0;
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            border: 1px solid transparent;
+            border-radius: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-form search-box layui-form-sm well" action="">
+            <div class="layui-row">
+                <div class="layui-col-sm4" id="area"></div>
+                <div class="layui-col-sm4">
+                    <label class="layui-form-label">选择门店</label>
+                    <div class="layui-input-block">
+                        <select name="mall" lay-filter="mall" id="mall"></select>
+                    </div>
+                </div>
+                <div class="layui-col-sm4">
+                    <label class="layui-form-label">请选择日期</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" id="date" placeholder="日期">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row">
+                <label class="layui-form-label"></label>
+                <div class="layui-inline">
+                    <button class="layui-btn" id="btn">查 询</button>
+                </div>
+            </div>
+        </div>
+
+        <table class="layui-hide" id="tableData"></table>
+        
+        <script id="formArea" type="text/html">
+        <label class="layui-form-label">选择区域</label>
+        <div class="layui-input-block">
+            <select name="area" lay-filter="area">
+                {{# layui.each(d,function(index,item){ }}
+                <option value="{{item.id}}">{{item.subcompanyname}}</option>
+                {{#});}}
+            </select>
+        </div>
+</script>
+
+        <script type="text/javascript" src="/livemanage/public/static/layui/layui.js" charset="utf-8"></script>
+
+        <script type="text/html" id="imgService">
+        {{#  if(d.type1.indexOf("uploads") != -1){ }}
+        <div style="margin:0 10px; display:inline-block !important; display:inline;  max-width:70px; max-height:50px;">
+            <img style=" max-width:70px; max-height:50px;" src="/livemanage/public//{{d.type1}}" onclick="previewImg(this)" />
+        </div>
+        {{#  } else { }} 
+            {{d.type1}}
+        {{# } }}
+</script>
+        <script type="text/html" id="imgEnviroment">
+        {{#  if(d.type2.indexOf("uploads") != -1){ }}
+        <div style="margin:0 10px; display:inline-block !important; display:inline;  max-width:70px; max-height:50px;">
+            <img style=" max-width:70px; max-height:50px;" src="https://report.ouyada.com/livemanage/public/{{d.type2}}" onclick="previewImg(this)" />
+        </div>
+        {{#  } else { }} 
+            {{d.type2}}
+        {{# } }}
+</script>
+
+        <!-- 实例化编辑器 -->
+        <script type="text/javascript">
+            function previewImg(obj) {
+                var imgHtml = "<img src='" + obj.src + "' width='500px' height='500px'/>";
+                //弹出层
+                layer.open({
+                    type: 1,
+                    shade: 0.8,
+                    offset: 'auto',
+                    area: "500px",  // area: [width + 'px',height+'px']  //原图显示
+                    shadeClose: true,
+                    scrollbar: false,
+                    title: "查看", //不显示标题
+                    content: imgHtml, //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+                    cancel: function () {
+                        //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构', { time: 5000, icon: 6 });
+                    }
+                });
+            }
+
+            layui.use(['form', 'laytpl', 'table', 'laydate'], function () {
+                var layer = layui.layer
+                    , $ = layui.jquery
+                    , form = layui.form
+                    , table = layui.table
+                    , laytpl = layui.laytpl
+                    , laydate = layui.laydate
+
+                laydate.render({
+                    elem: '#date'
+                    , format: 'yyyy-MM-dd'
+                    , max: 0
+                    , value: new Date()
+                });
+
+                $.ajax({
+                    type: "post",
+                    url: "<?php echo url('web/stat/getQuyu'); ?>",
+                    dataType: "json",
+                    contentType: "application/json",
+                    async: false
+                })
+                    .then(function (res) {
+                        if (res.code == 0) {
+                            var formMenu = document.getElementById("formArea").innerHTML; var view = document.getElementById("area");
+                            laytpl(formMenu).render(res.data, function (html) {
+                                view.innerHTML = html;
+                                let value = $("select[name='area']").val();
+                                geiMall(value)
+                                form.render();
+                            });
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    })
+                    .fail(function (err) {
+                        layer.msg(err.msg);
+                    });
+
+                form.on('select(area)', function (data) {
+                    if ($("select[name='area']").val() != '') {
+                        geiMall(data.value)
+                    }
+                });
+
+                var tableIns = table.render({
+                    elem: '#tableData'
+                    , method: "post"
+                    , url: "<?php echo url('web/Evaluation/dayReport'); ?>"
+                    , limit: 9999
+                    , where: {
+                        area_id: $("select[name='area']").val(),
+                        mall_id: $("select[name='mall']").val(),
+                        date: $('#date').val()
+                    }
+                    , toolbar: true
+                    , cols: [[
+                        { field: 'index', width: 80, title: '序号', fixed: 'left', templet: '#index' }
+                        , { field: 'name', title: '清洁大类', minWidth: 150 }
+                        , { field: 'count', title: '总分', minWidth: 80 }
+                        , { field: 'type1', title: '晨巡扣分', minWidth: 150, templet: "#imgService" }
+                        , { field: 'type2', title: '午巡扣分', minWidth: 150, templet: "#imgEnviroment" }
+                        , { field: 'type', title: '单项扣分标准', minWidth: 100 }
+                        , { field: 'user', title: '提交人', minWidth: 80 }
+                    ]]
+                    , done: function (res, curr, count) {
+                        merge(res);
+                    }
+                });
+
+                $(document).on('click', '#btn', function () {
+                    var time = $('#date').val();
+                    tableIns.reload({
+                        where: { //设定异步数据接口的额外参数，任意设
+                            area_id: $("select[name='area']").val(),
+                            mall_id: $("select[name='mall']").val(),
+                            date: time
+                        }
+                    });
+                });
+
+                function merge(res) {
+                    var data = res.data;
+                    var mergeIndex = 0;//定位需要添加合并属性的行数
+                    var mark = 1; //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+                    var columsName = ['type', 'user'];//需要合并的列名称
+                    var columsIndex = [6, 7];//需要合并的列索引值
+
+                    for (var k = 0; k < columsName.length; k++) { //这里循环所有要合并的列
+                        var trArr = $(".layui-table-body>.layui-table").find("tr");//所有行
+                        for (var i = 1; i < res.data.length; i++) { //这里循环表格当前的数据
+                            var tdCurArr = trArr.eq(i).find("td").eq(columsIndex[k]);//获取当前行的当前列
+                            var tdPreArr = trArr.eq(mergeIndex).find("td").eq(columsIndex[k]);//获取相同列的第一列
+
+                            if (data[i][columsName[k]] === data[i - 1][columsName[k]]) { //后一行的值与前一行的值做比较，相同就需要合并
+                                mark += 1;
+                                tdPreArr.each(function () {
+                                    $(this).attr("rowspan", mark);
+                                })
+                                tdCurArr.each(function () {
+                                    $(this).css("display", "none");
+                                })
+                            } else {
+                                mergeIndex = i;
+                                mark = 1;//一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+                            }
+                        }
+                        mergeIndex = 0;
+                        mark = 1;
+                    }
+                }
+
+                function geiMall(data) {
+                    $.ajax({
+                        type: "post",
+                        url: "<?php echo url('web/stat/getMall'); ?>",
+                        dataType: "json",
+                        contentType: "application/json",
+                        async: false,
+                        data: JSON.stringify({ area_id: data })
+                    })
+                        .then(function (res) {
+                            if (res.code == 0) {
+                                var mallInfo = '';
+                                for (var i in res.data) {
+                                    mallInfo += "<option value='" + res.data[i].id + "'>" + res.data[i].subcompanyname + "</option>"
+                                }
+                                $("select[name='mall']").html(mallInfo);
+                                form.render();
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        })
+                        .fail(function (err) {
+                            layer.msg(err.msg);
+                        });
+                }
+            });
+        </script>
+        <script type="text/html" id="index">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+</body>
+
+</html>

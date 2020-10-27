@@ -1,0 +1,178 @@
+---------------------------------------------------------------
+
+[2020-10-26T11:16:00+08:00] 10.1.2.135 GET 10.1.2.135/livemanage/public/index.php/web/article/lists.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:27:49+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getQuyu.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.041643s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.050207s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.122323s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY [id] DESC) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] = 0 )  OR ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.009515s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:27:49+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getMall.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000585s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.003910s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.003775s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY rand()) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [supsubcomid] = 252 AND [canceled] = 0 )  OR ( [supsubcomid] = 252 AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.011086s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:27:49+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/Evaluation/monthCleanAssessmentReport.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:27:50+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/Evaluation/monthCleanAssessmentReport.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:29:31+08:00] 10.1.2.135 GET 10.1.2.135/livemanage/public/index.php/web/article/lists.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:29:32+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getQuyu.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.018237s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.002846s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.002958s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY [id] DESC) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] = 0 )  OR ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.002861s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:29:33+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getMall.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000444s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.002592s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.001949s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY rand()) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [supsubcomid] = 252 AND [canceled] = 0 )  OR ( [supsubcomid] = 252 AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.003673s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:29:33+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/Evaluation/monthCleanAssessmentReport.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:29:34+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/Evaluation/monthCleanAssessmentReport.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:32:09+08:00] 10.1.2.135 GET 10.1.2.135/livemanage/public/index.php/web/article/lists.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:32:11+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getQuyu.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.018880s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.002658s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.002088s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY [id] DESC) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] = 0 )  OR ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.002927s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:32:11+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getMall.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000459s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.003052s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.002485s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY rand()) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [supsubcomid] = 252 AND [canceled] = 0 )  OR ( [supsubcomid] = 252 AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.002519s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:32:11+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/Evaluation/monthCleanAssessmentReport.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:32:12+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/Evaluation/monthCleanAssessmentReport.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:32:57+08:00] 10.1.2.135 GET 10.1.2.135/livemanage/public/index.php/web/article/lists.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:32:59+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getQuyu.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000456s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.001880s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.001226s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY [id] DESC) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] = 0 )  OR ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.002091s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:32:59+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getMall.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000454s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.001806s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.001362s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY rand()) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [supsubcomid] = 252 AND [canceled] = 0 )  OR ( [supsubcomid] = 252 AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.002092s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:33:00+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getQuyu.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000482s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.001833s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.001334s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY [id] DESC) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] = 0 )  OR ( [subcompanyname] IN ('直营商场','委托经营商场') AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.001947s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:33:00+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/stat/getMall.html
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000477s ] sqlsrv:Database=ecology;Server=10.1.200.62,1433
+[ sql ] [ SQL ] SELECT   column_name,   data_type,   column_default,   is_nullable
+        FROM    information_schema.tables AS t
+        JOIN    information_schema.columns AS c
+        ON  t.table_catalog = c.table_catalog
+        AND t.table_schema  = c.table_schema
+        AND t.table_name    = c.table_name
+        WHERE   t.table_name = 'HrmSubCompany' [ RunTime:0.001778s ]
+[ sql ] [ SQL ] SELECT column_name FROM information_schema.key_column_usage WHERE table_name='HrmSubCompany' [ RunTime:0.001165s ]
+[ sql ] [ SQL ] SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER ( ORDER BY rand()) AS ROW_NUMBER FROM (SELECT  * FROM [HrmSubCompany] WHERE  ( [supsubcomid] = 252 AND [canceled] = 0 )  OR ( [supsubcomid] = 252 AND [canceled] IS NULL )) AS thinkphp) AS T1 [ RunTime:0.002260s ]
+---------------------------------------------------------------
+
+[2020-10-26T11:33:00+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/Evaluation/monthCleanAssessmentReport.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)
+---------------------------------------------------------------
+
+[2020-10-26T11:33:01+08:00] 10.1.2.135 POST 10.1.2.135/livemanage/public/index.php/web/Evaluation/monthCleanAssessmentReport.html
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'query'@'localhost' (using password: YES)

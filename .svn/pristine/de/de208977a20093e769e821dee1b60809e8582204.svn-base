@@ -1,0 +1,14 @@
+[database]
+type=mysql
+hostname=127.0.0.1
+database=ayd_mini_program
+username=query
+password=xxzx123456
+hostport=3306
+prefix=ayd_
+debug=true
+[debug]
+app_debug=false
+[weChat]
+appid=wx1ba3f91a8e68cad8
+secret=5badf1513bd51712bc2c0fd1941c7776

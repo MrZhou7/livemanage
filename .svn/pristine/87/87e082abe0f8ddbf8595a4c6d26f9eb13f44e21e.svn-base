@@ -1,0 +1,220 @@
+<?php
+
+namespace app\service\controller\web;
+
+use app\service\controller\BaseService;
+use app\service\controller\CleanAssessmentService;
+use app\service\controller\CleanDetailService;
+use app\service\controller\CleanItemService;
+use app\service\controller\UserService;
+use think\App;
+
+
+class CleanService extends BaseService
+{
+    private $CleanItemService;
+    private $CleanDetailService;
+    private $CleanAssessmentService;
+
+    public function __construct(App $app = null)
+    {
+        parent::__construct($app);
+        $this->CleanDetailService     = new CleanDetailService();
+        $this->CleanAssessmentService = new CleanAssessmentService();
+        $this->CleanItemService       = new CleanItemService();
+        $this->UserService            = new UserService();
+    }
+
+    /**
+     * Notes:保洁卫生每日打分表
+     * User: myrxl
+     * @param $data
+     * @return bool
+     * Date: 2020/10/15
+     * Time: 9:25
+     */
+    public function day($data)
+    {
+        /**
+         * 通过门店信息 日期  获取每日打分
+         * 1：获取所有一级类目
+         * 1:获取主表信息
+         * 2：获取详情表数据
+         */
+
+        $main    = $this->CleanAssessmentService->getStatusList($data['mall_id'], $data['date']);
+        $typeArr = array_column($main, NULL, 'type');
+
+        //获取提交人信息
+        if (empty($main)) {
+            $user = "未提交";
+        } else {
+            $userNameArr = $this->UserService->getUserNameList(array_column($main, 'user_id'));
+            $user        = implode(",", array_column($userNameArr, 'name'));
+        }
+
+
+        //获取详情
+        $where  = [
+            ['assessment_id', 'in', array_column($main, 'id')],
+            ['enabled', '=', 1],
+        ];
+        $detail = $this->CleanDetailService->getList($where);
+
+
+        //重新组装数据
+        $detailArr = [];
+        foreach ($detail as $kk => $vv) {
+            $detailArr[$vv['first_id']]['name'] = $vv['first_name'];
+            $detailArr[$vv['first_id']]['id']   = $vv['first_id'];
+            if (1 == $vv['type']) {
+                $detailArr[$vv['first_id']]['type1'][] = $vv['num'];
+            } else {
+                $detailArr[$vv['first_id']]['type2'][] = $vv['num'];
+            }
+        }
+
+        $dataDetaile = [];
+
+        if (1 == count($main)) {
+            if (1 == $main[0]['type']) {
+                //只有晨巡
+                $type1Count = array_sum(array_column($detail, "num"));
+                $type2Count = 50;
+                $type1      = $main[0]['pic'];
+                $type2      = '-';
+            } else {
+                //只有午巡
+                $type1Count = 50;
+                $type2Count = array_sum(array_column($detail, "num"));
+                $type1      = '-';
+                $type2      = $main[0]['pic'];
+            }
+
+            foreach ($detailArr as $k => $v) {
+                $count         = $this->getNum($v['id']);
+                $type1Detail   = isset($v['type1']) ? array_sum($v['type1']) : '-';
+                $type2Detail   = isset($v['type2']) ? array_sum($v['type1']) : '-';
+                $dataDetaile[] = ['id' => $v['id'], "name" => $v['name'], "count" => $count, "type1" => $type1Detail, "type2" => $type2Detail, "number" => "-"];
+            }
+            $arrNum    = count($dataDetaile);
+            $dataCount = [
+                ["id" => $arrNum + 1, "name" => "日均实到人数", "count" => "-", "type1" => "-", "type2" => "-", "number" => array_sum(array_column($main, 'arrived_num')) / 2],
+                ["id" => $arrNum + 2, "name" => "保洁合影", "count" => "-", "type1" => $type1, "type2" => $type2, "number" => "-"],
+                ["id" => $arrNum + 3, "name" => "晨训扣分总计", "count" => "-" . ($type1Count + $type2Count), "type1" => "-" . $type1Count, "type2" => "-" . $type2Count, "number" => "-"],
+            ];
+
+
+        } else if (2 == count($main)) {
+
+            foreach ($detailArr as $k => $v) {
+                $count         = $this->getNum($v['id']);
+                $dataDetaile[] = ['id' => $v['id'], "name" => $v['name'], "count" => $count, "type1" => array_sum($v['type1']), "type2" => array_sum($v['type2']), "number" => "-"];
+            }
+            $arrNum     = count($dataDetaile);
+            $type1Count = array_sum(array_column($dataDetaile, 'type1'));
+            $type2Count = array_sum(array_column($dataDetaile, 'type2'));
+            $dataCount  = [
+                ["id" => $arrNum + 1, "name" => "日均实到人数", "count" => "-", "type1" => "-", "type2" => "-", "number" => array_sum(array_column($main, 'arrived_num')) / 2],
+                ["id" => $arrNum + 2, "name" => "保洁合影", "count" => "-", "type1" => $typeArr['1']['pic'], "type2" => $typeArr['2']['pic'], "number" => "-"],
+                ["id" => $arrNum + 3, "name" => "晨训扣分总计", "count" => "-" . ($type1Count + $type2Count), "type1" => "-" . $type1Count, "type2" => "-" . $type2Count, "number" => "-"],
+            ];
+
+        } else {
+
+            //获取所有一级类目
+            $item = $this->CleanItemService->getFirstList();
+            foreach ($item as $k => $v) {
+                $count           = $this->getNum($v['id']);
+                $dataDetaile[$k] = ["id" => $k + 1, "name" => $v['name'], "count" => $count, "type1" => "未到", "type2" => "未到", "number" => "-"];
+            }
+            $arrNum    = count($dataDetaile);
+            $dataCount = [
+                ["id" => $arrNum + 1, "name" => "日均实到人数", "count" => "-", "type1" => "-", "type2" => "-", "number" => "0"],
+                ["id" => $arrNum + 2, "name" => "保洁合影", "count" => "-", "type1" => "-", "type2" => "-", "number" => "-"],
+                ["id" => $arrNum + 3, "name" => "晨训扣分总计", "count" => "-100", "type1" => "-50", "type2" => "-50", "number" => "-"],
+            ];
+        }
+
+        $res = array_merge($dataDetaile, $dataCount);
+
+        return ['user' => $user, 'content' => $res];
+    }
+
+    /**
+     * Notes:保洁月度统计表
+     * User: myrxl
+     * @param $mall_id
+     * @param $date
+     * Date: 2020/10/15
+     * Time: 15:00
+     */
+    public function month($mall_id, $date)
+    {
+        //关联查询
+        $main = $this->CleanAssessmentService->getMonthList($mall_id, $date);
+        $data = [];
+        foreach ($main as $k => $v) {
+            $data[$v['mall_id']]["mall_id"]                            = $v['mall_id'];
+            $data[$v['mall_id']]["mall"]                               = $v['mall'];
+            $data[$v['mall_id']]['list'][$v['first_id']]['first_id']   = $v['first_id'];
+            $data[$v['mall_id']]['list'][$v['first_id']]['first_name'] = $v['first_name'];
+            $data[$v['mall_id']]['list'][$v['first_id']]['child'][]             = $v;
+        }
+        $newData = [];
+        foreach ($data as $kk => $vv){
+            $newData[$kk]['mall'] = $vv['mall'];
+            foreach ($vv['list'] as $kkk => $vvv){
+                $newData[$kk]['list'][$kkk.'num'] = array_sum(array_column($vvv['child'],"num"));
+            }
+        }
+        $res = [];
+        foreach ($newData as $k=>$v){
+            $res[$k]['mall'] = $v['mall'];
+            $res[$k]['count'] = array_sum(array_values($v['list']));
+            foreach ($v['list'] as $kk => $vv){
+                $res[$k][$kk] = $vv;
+            }
+        }
+
+
+        return array_values($res);
+    }
+
+
+    /**
+     * Notes:获取每项总分
+     * User: myrxl
+     * @param $id
+     * @return int
+     * Date: 2020/10/15
+     * Time: 11:57
+     */
+    private function getNum($id)
+    {
+        switch ($id) {
+            case 1:
+                $count = 12;
+                break;
+            case 2:
+                $count = 22;
+                break;
+            case 3:
+                $count = 14;
+                break;
+            case 4:
+                $count = 10;
+                break;
+            case 5:
+                $count = 18;
+                break;
+            case 6:
+                $count = 24;
+                break;
+        }
+        return $count;
+
+    }
+
+
+}

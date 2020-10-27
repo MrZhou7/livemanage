@@ -1,0 +1,84 @@
+<?php
+
+namespace app\api\controller\web;
+
+use app\service\controller\web\CleanService;
+use think\App;
+
+/**
+ * 评定项
+ * Class Column
+ * @package app\api\controller\web
+ */
+class Evaluation extends BaseController
+{
+    private $CleanService;
+
+    public function __construct(App $app = null)
+    {
+        parent::__construct($app);
+        $this->CleanService = new CleanService();
+    }
+
+
+    public function day(){
+        return view();
+    }
+    /**
+     * Notes: 保洁卫生每日打分表
+     * User: myrxl
+     * Date: 2020/10/15
+     * Time: 9:17
+     */
+    public function dayReport()
+    {
+
+        $data = [
+            'mall_id' => 9,
+            'date'    => "2020-10-15",
+        ];
+        $res  = $this->CleanService->day($data);
+        self::showReturnCode($res, 0);
+    }
+
+    public function month(){
+        return view();
+    }
+    /**
+     * Notes: 保洁卫生每月打分表
+     * User: myrxl
+     * Date: 2020/10/15
+     * Time: 9:17
+     */
+    public function monthReport()
+    {
+        $data = [
+            'mall_id' => "9,10,11,12",
+            'date'    => "2020-10-15",
+        ];
+
+        $res  = $this->CleanService->month(explode(",",$data["mall_id"]),$data['date']);
+        self::showReturnCode($res, 0);
+    }
+
+    public function monthCleanAssessment(){
+        return view();
+    }
+
+    /**
+     * Notes: 保洁卫生每月质量评定表
+     * User: myrxl
+     * Date: 2020/10/15
+     * Time: 9:17
+     */
+    public function monthCleanAssessmentReport()
+    {
+        $data = [
+            'mall_id' => "9,10,11,12",
+            'date'    => "2020-10-15",
+        ];
+
+    }
+
+
+}

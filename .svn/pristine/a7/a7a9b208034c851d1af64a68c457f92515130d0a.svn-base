@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>保洁卫生情况月度统计表</title>
+    <meta name="Description" content="现场管理"/>
+    <meta name="renderer" content="保洁卫生情况月度统计表">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" href="__STATIC__/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]> -->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <style type="text/css">
+        body{overflow-y: scroll;}
+        .box{
+            margin: 20px 10px;
+        }
+        .well{
+            min-height: 20px;
+            padding: 19px;
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            border: 1px solid transparent;
+            border-radius: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+
+<body>
+<div class="box">
+    <div class="layui-form well" action="">
+        <div class="layui-input-inline" id="area"></div>
+        <div class="layui-input-inline" id="mall"></div>
+        <div class="layui-inline">
+            <label class="layui-form-label">请选择日期</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="date" placeholder="日期">
+            </div>
+        </div>
+        <div class="layui-input-inline">
+            <div class="layui-inline">
+                <button class="layui-btn" id="btn">查 询</button>
+            </div>
+        </div>
+    </div>
+
+    <table class="layui-hide" id="tableData"></table>
+</div>
+
+<script id="formArea" type="text/html">
+    <div class="layui-inline">
+        <label class="layui-form-label">选择区域</label>
+        <div class="layui-input-inline">
+            <select name="area"  lay-filter="area">
+                <option value="">请先选择区域</option>
+                {{# layui.each(d,function(index,item){ }}
+                <option value="{{item.id}}">{{item.subcompanyname}}</option>
+                {{#});}}
+            </select>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">选择门店</label>
+        <div class="layui-input-inline">
+            <select name="mall" xm-select="select1" lay-filter="mall">
+                <option value="">请选择门店</option>
+            </select>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="__STATIC__/layui/layui.js" charset="utf-8"></script>
+
+<script type="text/html" id="imgService">
+    {{# var srr=d.service.pic.split("{|}");var txt=d.service.explanation.split("{|}");
+    for(var j in srr) { srr[j] }}
+    <div style="margin:0 10px; display:inline-block !important; display:inline;  max-width:70px; max-height:50px;">
+
+        <img style=" max-width:70px; max-height:50px;" src="https://report.ouyada.com/livemanage/public/{{srr[j]}}" data-txt="{{txt[j]}}" onclick="previewImg(this)" />
+
+    </div>
+    {{# } }}
+</script>
+<script type="text/html" id="imgEnviroment">
+    {{# var srr=d.enviroment.pic.split("{|}");var txt=d.enviroment.explanation.split("{|}");
+    for(var j in srr) { srr[j] }}
+    {{# if(srr[j] != '') { }}
+    <div style="margin:0 10px; display:inline-block !important; display:inline;  max-width:70px; max-height:50px;">
+        <img style=" max-width:70px; max-height:50px;" src="https://report.ouyada.com/livemanage/public/{{srr[j]}}" data-txt="{{txt[j]}}" onclick="previewImg(this)" />
+    </div>
+    {{# } }}
+    {{# } }}
+</script>
+
+<!-- 实例化编辑器 -->
+<script type="text/javascript">
+    function previewImg(obj) {
+        var imgHtml = "<img src='" + obj.src + "' width='500px' height='500px'/>" +
+            "<p style='margin-bottom: 10px;line-height:50px'><span style='font-weight: bolder'>说明：</span>" + obj.dataset.txt + "</p>";
+        //弹出层
+        layer.open({
+            type: 1,
+            shade: 0.8,
+            offset: 'auto',
+            area: "500px",  // area: [width + 'px',height+'px']  //原图显示
+            shadeClose:true,
+            scrollbar: false,
+            title: "查看", //不显示标题
+            content: imgHtml, //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+            cancel: function () {
+                //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构', { time: 5000, icon: 6 });
+            }
+        });
+    }
+
+    layui.use(['form', 'laytpl','table','laydate'], function(){
+        var layer = layui.layer
+            ,$ = layui.jquery
+            ,form = layui.form
+            ,table = layui.table
+            ,laytpl =layui.laytpl
+            ,laydate = layui.laydate
+
+        laydate.render({
+            elem: '#date'
+            ,format: 'yyyy-MM-dd'
+            ,max: 0
+        });
+
+
+        $.ajax({
+            type: "post",
+            url: "{:url('web/stat/getQuyu')}",
+            dataType: "json",
+            contentType: "application/json",
+            async: false
+        })
+            .then(function (res) {
+                if (res.code == 0) {
+                    console.log(res)
+                    var formMenu=document.getElementById("formArea").innerHTML;var view=document.getElementById("area");
+                    laytpl(formMenu).render(res.data,function (html) {
+                        view.innerHTML = html;
+                        form.render();
+                    });
+                } else {
+                    layer.msg(res.msg);
+                }
+            })
+            .fail(function (err) {
+                layer.msg(err.msg);
+            });
+
+        form.on('select(area)', function(data){
+            if($("select[name='area']").val() != '') {
+                $.ajax({
+                    type: "post",
+                    url: "{:url('web/stat/getMall')}",
+                    dataType: "json",
+                    contentType: "application/json",
+                    async: false,
+                    data: JSON.stringify({area_id: data.value})
+                })
+                    .then(function (res) {
+                        if (res.code == 0) {
+                            var mallInfo = '<option value="">请选择门店</option>';
+                            for (var i in res.data) {
+                                mallInfo += "<option value='" + res.data[i].id + "'>" + res.data[i].subcompanyname + "</option>"
+                            }
+                            $("select[name='mall']").html(mallInfo);
+                            form.render();
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    })
+                    .fail(function (err) {
+                        layer.msg(err.msg);
+                    });
+            }
+        });
+
+        var tableIns = table.render({
+            elem: '#tableData'
+            ,method: "post"
+            ,url:"{:url('web/Evaluation/monthReport')}"
+            // ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+            //     layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+            //     //,curr: 1 //设定初始在第 1 页
+            //     ,groups: 3 //只显示 1 个连续页码
+            //     ,first: true //不显示首页
+            //     ,last: true //不显示尾页
+            // }
+            ,limit:9999
+            ,cols: [[
+                {field:'index', width:80, title: '序号',fixed: 'left',templet:'#index'}
+                ,{field:'mall',  title: '门店', minWidth: 150}
+                ,{field:'count',  title: '月均扣分', minWidth: 150}
+                ,{field:'1num',  title: '商场出入口', minWidth: 150}
+                ,{field:'1num', title: '公共区域天地墙',  minWidth: 150}
+                ,{field:'1num', title: '设备设施', minWidth: 150}
+                ,{field:'1num', title: '消防通道', minWidth: 150}
+                ,{field:'1num', title: '电梯', minWidth: 150}
+                ,{field:'1num', title: '卫生间', minWidth: 150}
+            ]]
+        });
+
+
+        $(document).on('click','#btn',function(){
+            var time = $('#date').val();
+            tableIns.reload({
+                where: { //设定异步数据接口的额外参数，任意设
+                    area_id:$("select[name='area']").val(),
+                    mall_id:$("select[name='mall']").val(),
+                    data: time
+                }
+            });
+        })
+    });
+</script>
+<script type="text/html" id="index">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+</body>
+
+</html>

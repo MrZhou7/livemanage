@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>编辑分类</title>
+    <meta name="Description" content="现场管理"/>
+    <meta name="renderer" content="编辑分类">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" href="__STATIC__/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <style type="text/css">
+        body{overflow-y: scroll;}
+        .box{
+            margin: 20px 10px;
+        }
+        .formWrap{
+            min-height: 20px;
+            padding: 19px;
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            border: 1px solid transparent;
+            border-radius: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
+        }
+        .layui-form-item .layui-input-inline {
+            width: 285px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="box">
+    <form class="layui-form formWrap" lay-filter="formData" id="formData" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">栏目名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" lay-verify="required" placeholder="请输入" value="{$data['name']}" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上级名称</label>
+            <div class="layui-input-inline">
+                <input type="text" value="{$data['pname'] ? $data['pname'] : '无' }" disabled="disabled" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-inline">
+                <input type="text" name="sort" lay-verify="required" placeholder="请输入" value="{$data['sort']}" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="demo1">提 交</button>
+            </div>
+        </div>
+        <input type="text" name="id" value="{$data['id']}" style="display: none" autocomplete="off" class="layui-input">
+    </form>
+
+
+</div>
+
+<script type="text/javascript" src="__STATIC__/layui/layui.js" charset="utf-8"></script>
+<!-- 实例化编辑器 -->
+<script type="text/javascript">
+    layui.use(['form'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            , $ = layui.$;
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            // console.log(JSON.stringify(data.field))
+            $.ajax({
+                type: "post",
+                url: "{:url('web/column/edit')}",
+                dataType: "json",
+                contentType: "application/json",
+                async: false,
+                data: JSON.stringify(data.field)
+            })
+                .then(function (res) {
+                    if (res.code == 0) {
+                        layer.msg('提交成功');
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                })
+                .fail(function (err) {
+                    layer.msg(err.msg);
+                });
+        });
+
+    });
+</script>
+
+</body>
+
+</html>

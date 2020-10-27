@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>解决问题平均时长</title>
+    <meta name="Description" content="现场管理"/>
+    <meta name="renderer" content="文章列表">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" href="__STATIC__/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]> -->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <style type="text/css">
+        body{overflow-y: scroll;}
+        .box{
+            margin: 20px 10px;
+        }
+        .boxWrap{
+            margin: 20px 10px;
+            border: 2px solid #ecf0f1;
+        }
+        .well{
+            min-height: 20px;
+            padding: 19px;
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            border: 1px solid transparent;
+            border-radius: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
+        }
+        .layui-form-item{
+            margin:15px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="box well">
+    <div class="layui-form" action="">
+        <div class="layui-input-inline" id="area"></div>
+        <div class="layui-input-inline" id="mall"></div>
+        <div class="layui-input-inline">
+            <div class="layui-inline">
+                <button class="layui-btn" id="btn">查 询</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="boxWrap">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">耗时</label>
+            <div class="layui-input-inline">
+                <input readonly type="text" name="date" class="layui-input">
+            </div>
+        </div>
+    </div>
+</div>
+<script id="formArea" type="text/html">
+    <div class="layui-inline">
+        <label class="layui-form-label">选择区域</label>
+        <div class="layui-input-inline">
+            <select name="area"  lay-filter="area">
+                <option value="">请先选择区域</option>
+                {{# layui.each(d,function(index,item){ }}
+                <option value="{{item.id}}">{{item.subcompanyname}}</option>
+                {{#});}}
+            </select>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">选择门店</label>
+        <div class="layui-input-inline">
+            <select name="mall"  lay-filter="mall">
+                <option value="">请选择门店</option>
+            </select>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="__STATIC__/layui/layui.js" charset="utf-8"></script>
+<!-- 实例化编辑器 -->
+<script type="text/javascript">
+
+    layui.use(['form', 'laytpl'], function(){
+        var layer = layui.layer
+            ,$ = layui.jquery
+            ,form = layui.form
+            ,laytpl =layui.laytpl
+        $.ajax({
+            type: "post",
+            url: "{:url('web/stat/getQuyu')}",
+            dataType: "json",
+            contentType: "application/json",
+            async: false
+        })
+            .then(function (res) {
+                if (res.code == 0) {
+                    console.log(res)
+                    var formMenu=document.getElementById("formArea").innerHTML;var view=document.getElementById("area");
+                    laytpl(formMenu).render(res.data,function (html) {
+                        view.innerHTML = html;
+                        form.render();
+                    });
+                } else {
+                    layer.msg(res.msg);
+                }
+            })
+            .fail(function (err) {
+                layer.msg(err.msg);
+            });
+
+        form.on('select(area)', function(data){
+            if($("select[name='area']").val() != '') {
+                console.log(data.value); //得到被选中的值
+                $.ajax({
+                    type: "post",
+                    url: "{:url('web/stat/getMall')}",
+                    dataType: "json",
+                    contentType: "application/json",
+                    async: false,
+                    data: JSON.stringify({area_id: data.value})
+                })
+                    .then(function (res) {
+                        if (res.code == 0) {
+                            console.log(res)
+                            var mallInfo = '<option value="">请选择门店</option>';
+                            for (var i in res.data) {
+                                mallInfo += "<option value='" + res.data[i].id + "'>" + res.data[i].subcompanyname + "</option>"
+                            }
+                            $("select[name='mall']").html(mallInfo)
+                            form.render()
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    })
+                    .fail(function (err) {
+                        layer.msg(err.msg);
+                    });
+            }
+        });
+        $(document).on('click','#btn',function(){
+            $.ajax({
+                type: "post",
+                url: "{:url('web/stat/avgtime')}",
+                dataType: "json",
+                contentType: "application/json",
+                async: false,
+                data:JSON.stringify({ area_id:$("select[name='area']").val(),mall_id:$("select[name='mall']").val() })
+            })
+                .then(function (res) {
+                    if (res.code == 0) {
+                        console.log(res.data)
+                        $(" input[ name='date' ] ").val(res.data)
+
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                })
+                .fail(function (err) {
+                    layer.msg(err.msg);
+                });
+        })
+
+    });
+</script>
+
+</body>
+
+</html>
